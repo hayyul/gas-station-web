@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import Link from 'next/link';
 import DashboardLayout from '@/components/dashboard-layout';
 import { ApiService } from '@/lib/api-service';
 import { DashboardStats } from '@/lib/types';
@@ -17,18 +18,19 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadStats();
-  }, []);
-
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     setLoading(true);
     const response = await ApiService.getDashboardStats();
     if (response.success && response.data) {
       setStats(response.data);
     }
     setLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    loadStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (loading) {
     return (
@@ -110,7 +112,9 @@ export default function DashboardPage() {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.name}</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    {stat.name}
+                  </p>
                   <p className="mt-2 text-3xl font-semibold text-gray-900">
                     {stat.value.toLocaleString()}
                   </p>
@@ -150,9 +154,7 @@ export default function DashboardPage() {
                 <span>
                   {stats?.verificationsWeekCount || 0} total verifications
                 </span>
-                <span>
-                  {stats?.failedVerificationsWeek || 0} failed
-                </span>
+                <span>{stats?.failedVerificationsWeek || 0} failed</span>
               </div>
             </div>
           </div>
@@ -160,29 +162,34 @@ export default function DashboardPage() {
 
         {/* Quick Actions */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Quick Actions
+          </h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <a
+            <Link
               href="/dashboard/stations"
+              prefetch={false}
               className="flex items-center justify-center px-4 py-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors"
             >
               <Building2 className="h-5 w-5 mr-2" />
               Manage Stations
-            </a>
-            <a
+            </Link>
+            <Link
               href="/dashboard/pumps"
+              prefetch={false}
               className="flex items-center justify-center px-4 py-3 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg transition-colors"
             >
               <Fuel className="h-5 w-5 mr-2" />
               Manage Pumps
-            </a>
-            <a
+            </Link>
+            <Link
               href="/dashboard/audit-logs"
+              prefetch={false}
               className="flex items-center justify-center px-4 py-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg transition-colors"
             >
               <Activity className="h-5 w-5 mr-2" />
               View Audit Logs
-            </a>
+            </Link>
             <button
               onClick={loadStats}
               className="flex items-center justify-center px-4 py-3 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg transition-colors"

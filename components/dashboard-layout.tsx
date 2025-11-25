@@ -67,6 +67,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <Link
                   key={item.name}
                   href={item.href}
+                  prefetch={false}
                   className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
                     isActive
                       ? 'bg-blue-50 text-blue-700'
